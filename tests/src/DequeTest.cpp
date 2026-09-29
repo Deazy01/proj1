@@ -79,3 +79,115 @@ TYPED_TEST(DequeTest, LimitsTest){
     }
     
 }
+TYPED_TEST(DequeTest, MixedFrontBackOperations) {
+    EXPECT_TRUE(this->DDeque->PushBack(10));
+    EXPECT_TRUE(this->DDeque->PushBack(20));
+    EXPECT_TRUE(this->DDeque->PushFront(5));
+    EXPECT_TRUE(this->DDeque->PushFront(1));
+
+    EXPECT_EQ(this->DDeque->Size(), 4);
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Front()), 1);
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Back()), 20);
+
+    EXPECT_TRUE(this->DDeque->PopFront());
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Front()), 5);
+
+    EXPECT_TRUE(this->DDeque->PopBack());
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Back()), 10);
+}
+TYPED_TEST(DequeTest, CircularWrapAround) {
+    TDequeSize Capacity = this->DDeque->MaxSize();
+
+    if (Capacity != GDequeSizeVariable) {
+        for (TDequeSize Index = 0; Index < Capacity; Index++) {
+            EXPECT_TRUE(this->DDeque->PushBack(Index));
+        }
+
+        for (TDequeSize Index = 0; Index < Capacity / 2; Index++) {
+            EXPECT_TRUE(this->DDeque->PopFront());
+        }
+
+        for (TDequeSize Index = 0; Index < Capacity / 2; Index++) {
+            EXPECT_TRUE(this->DDeque->PushBack(Capacity + Index));
+        }
+
+        EXPECT_EQ(this->DDeque->Size(), Capacity);
+        EXPECT_EQ(
+            std::any_cast<TDequeSize>(this->DDeque->Front()),
+            Capacity / 2
+        );
+        EXPECT_EQ(
+            std::any_cast<TDequeSize>(this->DDeque->Back()),
+            Capacity + Capacity / 2 - 1
+        );
+    }
+}
+
+TYPED_TEST(DequeTest, VariableDequeGrowth) {
+    if (this->DDeque->MaxSize() == GDequeSizeVariable) {
+        for (TDequeSize Index = 0; Index < 100; Index++) {
+            EXPECT_TRUE(this->DDeque->PushBack(Index));
+        }
+
+        EXPECT_EQ(this->DDeque->Size(), 100);
+
+        for (TDequeSize Index = 0; Index < 100; Index++) {
+            ASSERT_EQ(this->DDeque->Size(), 100 - Index);
+            EXPECT_EQ(
+                std::any_cast<TDequeSize>(this->DDeque->Front()),
+                Index
+            );
+            EXPECT_TRUE(this->DDeque->PopFront());
+        }
+
+        EXPECT_EQ(this->DDeque->Size(), 0);
+    }
+}
+
+TYPED_TEST(DequeTest, GrowthAfterFrontMovement) {
+    if (this->DDeque->MaxSize() == GDequeSizeVariable) {
+        for (TDequeSize Index = 0; Index < 8; Index++) {
+            EXPECT_TRUE(this->DDeque->PushBack(Index));
+        }
+
+        for (TDequeSize Index = 0; Index < 4; Index++) {
+            EXPECT_TRUE(this->DDeque->PopFront());
+        }
+
+        for (TDequeSize Index = 8; Index < 20; Index++) {
+            EXPECT_TRUE(this->DDeque->PushBack(Index));
+        }
+
+        EXPECT_EQ(this->DDeque->Size(), 16);
+        EXPECT_EQ(
+            std::any_cast<TDequeSize>(this->DDeque->Front()),
+            4
+        );
+        EXPECT_EQ(
+            std::any_cast<TDequeSize>(this->DDeque->Back()),
+            19
+        );
+    }
+}
+
+TYPED_TEST(DequeTest, DifferentAnyTypes) {
+    EXPECT_TRUE(this->DDeque->PushBack(42));
+    EXPECT_TRUE(this->DDeque->PushBack(3.14));
+    EXPECT_TRUE(this->DDeque->PushBack(std::string("hello")));
+
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Front()), 42);
+
+    EXPECT_TRUE(this->DDeque->PopFront());
+
+    EXPECT_EQ(
+        std::any_cast<double>(this->DDeque->Front()),
+        3.14
+    );
+
+    EXPECT_TRUE(this->DDeque->PopFront());
+
+    EXPECT_EQ(
+        std::any_cast<std::string>(this->DDeque->Front()),
+        "hello"
+    );
+}
