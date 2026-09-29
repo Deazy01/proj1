@@ -1,0 +1,22 @@
+# Build directories
+bin/
+obj/
+
+# Test/coverage output
+tests/bin/
+tests/obj/
+tests/htmlcov/
+*.gcda
+*.gcno
+*.gcov
+coverage.info
+
+# Generated analysis output
+results.csv
+
+# macOS metadata
+._*
+
+# IDE files
+.idea/
+.vscode/
