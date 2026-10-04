@@ -191,3 +191,18 @@ TYPED_TEST(DequeTest, DifferentAnyTypes) {
         "hello"
     );
 }
+
+TYPED_TEST(DequeTest, ZeroCapacityDeque) {
+    if constexpr (std::is_same_v<TypeParam, CMaxSizeDeque>) {
+        TypeParam deque(0);
+
+        EXPECT_EQ(deque.Size(), 0);
+        EXPECT_EQ(deque.MaxSize(), 0);
+        EXPECT_FALSE(deque.PushBack(1));
+        EXPECT_FALSE(deque.PushFront(2));
+        EXPECT_FALSE(deque.PopBack());
+        EXPECT_FALSE(deque.PopFront());
+        EXPECT_FALSE(deque.Front().has_value());
+        EXPECT_FALSE(deque.Back().has_value());
+    }
+}
