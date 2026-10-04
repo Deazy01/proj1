@@ -10,7 +10,7 @@ CVariableSizeDeque for a dynamically growing deque.
 
 Both implementations use a circular array with std::any elements. The variable-size implementation increases its storage capacity when the current storage becomes full.
 
-The project currently passes all 18 GoogleTest tests, including the provided tests and five additional tests.
+The project currently passes all 24 GoogleTest tests, including the provided tests and eight additional tests.
 
 Coverage testing completed successfully with:
 
@@ -34,7 +34,9 @@ make coverage runs the tests with coverage instrumentation and generates the HTM
 make analysis runs the analysis program under Valgrind for the required iteration counts and then runs the analysis normally.
 
 Additional Tests
-
+ZeroCapacityDeque - tests behavior when a fixed-size deque has zero capacity.
+EmptyDequeOperations - tests operations on an empty deque and verifies failure behavior.
+WrapAroundThenGrowth - tests growth after the circular buffer has wrapped around.
 Five additional tests were added to the provided test suite:
 
 MixedFrontBackOperations - tests combinations of front and back insertions and removals.
@@ -43,7 +45,7 @@ VariableDequeGrowth - tests that the variable-size deque grows when its capacity
 GrowthAfterFrontMovement - tests growth after the front position has moved.
 DifferentAnyTypes - tests storing different types in std::any, including int, double, and std::string.
 
-All 18 tests pass for the two deque implementations.
+All 24 tests pass for the two deque implementations.
 
 Known Issues
 
