@@ -214,3 +214,19 @@ TYPED_TEST(DequeTest, EmptyDequeOperations) {
     EXPECT_FALSE(this->DDeque->PopBack());
     EXPECT_EQ(this->DDeque->Size(), 0);
 }
+TYPED_TEST(DequeTest, WrapAroundThenGrowth) {
+    for (int index = 0; index < 8; index++) {
+        EXPECT_TRUE(this->DDeque->PushBack(index));
+    }
+
+    EXPECT_TRUE(this->DDeque->PopFront());
+    EXPECT_TRUE(this->DDeque->PopFront());
+
+    for (int index = 8; index < 12; index++) {
+        EXPECT_TRUE(this->DDeque->PushBack(index));
+    }
+
+    EXPECT_EQ(this->DDeque->Size(), 10);
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Front()), 2);
+    EXPECT_EQ(std::any_cast<int>(this->DDeque->Back()), 11);
+}
