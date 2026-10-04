@@ -14,8 +14,7 @@ The project currently passes all 24 GoogleTest tests, including the provided tes
 
 Coverage testing completed successfully with:
 
-Line coverage: 96.2%
-Function coverage: 100%
+Line coverage:99.2%Function coverage: 100%
 
 Valgrind testing completed successfully for 1024, 2048, 4096, and 8192 iterations with zero detected memory leaks.
 
