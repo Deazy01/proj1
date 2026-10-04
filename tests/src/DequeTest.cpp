@@ -206,3 +206,11 @@ TYPED_TEST(DequeTest, ZeroCapacityDeque) {
         EXPECT_FALSE(deque.Back().has_value());
     }
 }
+TYPED_TEST(DequeTest, EmptyDequeOperations) {
+    EXPECT_EQ(this->DDeque->Size(), 0);
+    EXPECT_FALSE(this->DDeque->Front().has_value());
+    EXPECT_FALSE(this->DDeque->Back().has_value());
+    EXPECT_FALSE(this->DDeque->PopFront());
+    EXPECT_FALSE(this->DDeque->PopBack());
+    EXPECT_EQ(this->DDeque->Size(), 0);
+}
