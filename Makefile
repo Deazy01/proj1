@@ -13,12 +13,17 @@ TEST_OBJ_DIR = tests/obj
 TESTCOVER_DIR = tests/htmlcov
 
 COVERAGE_INFO_FILE = coverage.info
+COVERAGE_OBJ_DIR = tests/obj/coverage
+COVERAGE_PROGRAM = tests/bin/testdeque_coverage
 
 DEQUE_SRC = $(SRC_DIR)/MaxSizeDeque.cpp $(SRC_DIR)/VariableSizeDeque.cpp
 DEQUE_OBJ = $(OBJ_DIR)/MaxSizeDeque.o $(OBJ_DIR)/VariableSizeDeque.o
 
+COVERAGE_DEQUE_OBJ = $(COVERAGE_OBJ_DIR)/MaxSizeDeque.o $(COVERAGE_OBJ_DIR)/VariableSizeDeque.o
+
 TEST_SRC = $(TEST_SRC_DIR)/DequeTest.cpp
 TEST_OBJ = $(TEST_OBJ_DIR)/DequeTest.o
+COVERAGE_TEST_OBJ = $(COVERAGE_OBJ_DIR)/DequeTest.o
 
 TEST_PROGRAM = $(TEST_BIN_DIR)/testdeque
 ANALYSIS_PROGRAM = $(BIN_DIR)/analysis
@@ -27,7 +32,7 @@ ANALYSIS_PROGRAM = $(BIN_DIR)/analysis
 
 all: test
 
-$(BIN_DIR) $(OBJ_DIR) $(TEST_BIN_DIR) $(TEST_OBJ_DIR) $(TESTCOVER_DIR):
+$(BIN_DIR) $(OBJ_DIR) $(TEST_BIN_DIR) $(TEST_OBJ_DIR) $(TESTCOVER_DIR) $(COVERAGE_OBJ_DIR):
 	mkdir -p $@
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
@@ -45,10 +50,23 @@ $(ANALYSIS_PROGRAM): $(DEQUE_OBJ) $(SRC_DIR)/analysis.cpp | $(BIN_DIR)
 test: $(TEST_PROGRAM)
 	./$(TEST_PROGRAM)
 
-coverage: $(TEST_PROGRAM)
+$(COVERAGE_OBJ_DIR)/MaxSizeDeque.o: $(SRC_DIR)/MaxSizeDeque.cpp | $(COVERAGE_OBJ_DIR)
+	$(CXX) $(CXXFLAGS) --coverage -c $< -o $@
+
+$(COVERAGE_OBJ_DIR)/VariableSizeDeque.o: $(SRC_DIR)/VariableSizeDeque.cpp | $(COVERAGE_OBJ_DIR)
+	$(CXX) $(CXXFLAGS) --coverage -c $< -o $@
+
+$(COVERAGE_OBJ_DIR)/DequeTest.o: $(TEST_SRC_DIR)/DequeTest.cpp | $(COVERAGE_OBJ_DIR)
+	$(CXX) $(CXXFLAGS) --coverage -c $< -o $@
+
+$(COVERAGE_PROGRAM): $(COVERAGE_DEQUE_OBJ) $(COVERAGE_TEST_OBJ) | $(TEST_BIN_DIR)
+	$(CXX) --coverage $(COVERAGE_DEQUE_OBJ) $(COVERAGE_TEST_OBJ) $(LDFLAGS) $(LDLIBS) -o $@
+
+coverage: $(COVERAGE_PROGRAM)
 	rm -rf $(TESTCOVER_DIR)
 	mkdir -p $(TESTCOVER_DIR)
-	lcov --capture --directory `pwd` --output-file $(COVERAGE_INFO_FILE) --ignore-errors inconsistent,source 2> lcov.err && grep -v "mismatched end line" lcov.err >&2 && rm -f lcov.err
+	./$(COVERAGE_PROGRAM)
+	lcov --capture --directory $(COVERAGE_OBJ_DIR) --output-file $(COVERAGE_INFO_FILE) --ignore-errors inconsistent,source
 	lcov --remove $(COVERAGE_INFO_FILE) '/usr/*' '*/tests/src/*' '*/*.h' --output-file $(COVERAGE_INFO_FILE)
 	genhtml $(COVERAGE_INFO_FILE) --output-directory $(TESTCOVER_DIR)
 
